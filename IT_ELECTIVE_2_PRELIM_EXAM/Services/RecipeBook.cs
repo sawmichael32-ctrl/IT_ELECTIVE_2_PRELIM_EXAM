@@ -33,9 +33,8 @@ public class RecipeBook
     // and chains to the above with default capacity 10
     // Currently this stub doesn't chain - fix it!
     public RecipeBook(string name)
+    : this(name, 10)
     {
-        Name = name;
-        meals = new List<Meal>();
     }
 
     public void AddMeal(Meal meal)
@@ -56,7 +55,10 @@ public class RecipeBook
     // Currently this stub returns empty - fix it!
     public List<Meal> Search(string term, string category)
     {
-        return new List<Meal>();
+        return meals.Where(m =>
+            m.Name.Contains(term, StringComparison.OrdinalIgnoreCase) &&
+            m.Category.Contains(category, StringComparison.OrdinalIgnoreCase))
+            .ToList();
     }
 
     // EXERCISE 6: Add overload Search(int maxPrepTime)

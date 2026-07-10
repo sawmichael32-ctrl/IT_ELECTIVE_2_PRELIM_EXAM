@@ -1,16 +1,44 @@
 namespace IT_ELECTIVE_2_PRELIM_EXAM.Models;
 
-// EXERCISE 2: Encapsulation - Validation in Property Setter
-// The Ingredient class has basic properties, but the setter for 'Quantity'
-// has no validation. Your task:
-// - Ensure 'Quantity' cannot be set to a negative number (throw ArgumentOutOfRangeException)
-// - Ensure 'Name' cannot be set to null or empty (throw ArgumentException)
-
 public class Ingredient
 {
-    public string Name { get; set; }
-    public string Measure { get; set; }
-    public double Quantity { get; set; }
+    private string name;
+    private string measure;
+    private double quantity;
+
+    public string Name
+    {
+        get => name;
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new ArgumentException("Name cannot be empty.");
+            }
+
+            name = value;
+        }
+    }
+
+    public string Measure
+    {
+        get => measure;
+        set => measure = value;
+    }
+
+    public double Quantity
+    {
+        get => quantity;
+        set
+        {
+            if (value < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(Quantity));
+            }
+
+            quantity = value;
+        }
+    }
 
     public Ingredient()
     {
