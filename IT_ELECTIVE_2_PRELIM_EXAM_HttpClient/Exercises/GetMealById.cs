@@ -14,11 +14,23 @@ public static class GetMealById
 {
     public static async Task Run(System.Net.Http.HttpClient client)
     {
-        // TODO: Send GET request to https://themealdb.com/api/json/v1/1/lookup.php?i=52771
-        // TODO: Assert status code is 200 OK
-        // TODO: Parse the response JSON
-        // TODO: Assert the meal name (strMeal) is "Arrabiata"
+        var response = await client.GetAsync("https://themealdb.com/api/json/v1/1/lookup.php?i=52771");
 
-        throw new NotImplementedException();
+        if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            throw new Exception("Status code should be 200 OK.");
+
+        var body = await response.Content.ReadAsStringAsync();
+
+        using var document = System.Text.Json.JsonDocument.Parse(body);
+
+        var meals = document.RootElement.GetProperty("meals");
+
+        if (meals.ValueKind == System.Text.Json.JsonValueKind.Null)
+            throw new Exception("Meal not found.");
+
+        var mealName = meals[0].GetProperty("strMeal").GetString();
+
+        if (mealName == null || !mealName.Contains("Arrabiata", StringComparison.OrdinalIgnoreCase))
+            throw new Exception("Meal name should contain Arrabiata.");
     }
 }

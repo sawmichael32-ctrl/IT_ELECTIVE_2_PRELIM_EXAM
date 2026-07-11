@@ -15,11 +15,21 @@ public static class SearchMealByName
 {
     public static async Task Run(System.Net.Http.HttpClient client)
     {
-        // TODO: Send GET request to https://themealdb.com/api/json/v1/1/search.php?s=Arrabiata
-        // TODO: Assert status code is 200 OK
-        // TODO: Parse the response JSON
-        // TODO: Assert that the "meals" array is not null and has at least 1 item
+        var response = await client.GetAsync("https://themealdb.com/api/json/v1/1/search.php?s=Arrabiata");
 
-        throw new NotImplementedException();
+        if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            throw new Exception("Status code should be 200 OK.");
+
+        var body = await response.Content.ReadAsStringAsync();
+
+        using var document = System.Text.Json.JsonDocument.Parse(body);
+
+        var meals = document.RootElement.GetProperty("meals");
+
+        if (meals.ValueKind == System.Text.Json.JsonValueKind.Null)
+            throw new Exception("Meals should not be null.");
+
+        if (meals.GetArrayLength() < 1)
+            throw new Exception("Meals array should contain at least one item.");
     }
 }

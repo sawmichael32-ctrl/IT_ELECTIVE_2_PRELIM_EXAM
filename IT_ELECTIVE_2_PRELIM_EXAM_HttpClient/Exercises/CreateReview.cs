@@ -17,13 +17,34 @@ public static class CreateReview
 {
     public static async Task Run(System.Net.Http.HttpClient client)
     {
-        // TODO: Create JSON string with title, body, and userId
-        // TODO: Create StringContent with the JSON and Content-Type "application/json"
-        // TODO: Send POST request to https://jsonplaceholder.typicode.com/posts
-        // TODO: Assert status code is 201 Created
-        // TODO: Parse the response JSON
-        // TODO: Assert the response has an "id" field with a value
+        var json = """
+    {
+        "title": "Great Pasta!",
+        "body": "Loved this recipe",
+        "userId": 1
+    }
+    """;
 
-        throw new NotImplementedException();
+        var content = new StringContent(
+            json,
+            System.Text.Encoding.UTF8,
+            "application/json");
+
+        var response = await client.PostAsync(
+            "https://jsonplaceholder.typicode.com/posts",
+            content);
+
+        if (response.StatusCode != System.Net.HttpStatusCode.Created)
+            throw new Exception("Status code should be 201 Created.");
+
+        var body = await response.Content.ReadAsStringAsync();
+
+        using var document = System.Text.Json.JsonDocument.Parse(body);
+
+        if (!document.RootElement.TryGetProperty("id", out var id))
+            throw new Exception("Response should contain an id.");
+
+        if (id.GetInt32() <= 0)
+            throw new Exception("Id should be greater than 0.");
     }
 }
